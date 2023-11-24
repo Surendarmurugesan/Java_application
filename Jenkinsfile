@@ -54,7 +54,7 @@ pipeline{
                }
             }
        }
-       stage('Quality Gate Status Check : Sonarqube'){
+        stage('Quality Gate Status Check : Sonarqube'){
          when { expression {  params.action == 'create' } }
             steps{
                script{
@@ -73,6 +73,15 @@ pipeline{
                }
             }
         }
+        stage('Push to JFrog Artifactory'){
+            when { expression { params.action == 'create' } }
+                steps{
+                    script{
+                        def JFrogcredentialsId = 'jfrog-api'
+                        artifactoryPublisher(JFrogcredentialsId)
+                    }
+                }
+        }
         stage('Docker Image Build'){
          when { expression {  params.action == 'create' } }
             steps{
@@ -82,7 +91,7 @@ pipeline{
                }
             }
         }
-         stage('Docker Image Scan: trivy '){
+       stage('Docker Image Scan: trivy '){
          when { expression {  params.action == 'create' } }
             steps{
                script{
